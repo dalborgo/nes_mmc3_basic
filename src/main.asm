@@ -51,10 +51,11 @@ forever:
 
 .segment "RODATA"
 palettes:
-.byte $0f,$00,$10,$30
-.byte $0f,$01,$21,$31
-.byte $0f,$06,$16,$26
-.byte $0f,$09,$19,$29
+.byte $0f,$12,$24,$30
+.byte $0f,$0c,$21,$32
+.byte $0f,$05,$16,$27
+.byte $0f,$0b,$1a,$29
+
 
 
 .segment "CHR"
