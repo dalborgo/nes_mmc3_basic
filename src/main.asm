@@ -1,6 +1,9 @@
 .include "constants.inc"
 .include "header.inc"
 
+.segment "ZEROPAGE"
+frame_index: .res 1
+
 .segment "CODE"
 .proc irq_handler
     RTI
@@ -12,6 +15,77 @@
     LDA #$00
     STA PPUSCROLL
     RTI
+.endproc
+
+.proc set_chr_banks
+    LDA frame_index
+    BEQ frame0
+
+; Frame 1
+    LDA #$00
+    STA BANK_SELECT
+    LDA #$08
+    STA BANK_DATA
+
+    LDA #$01
+    STA BANK_SELECT
+    LDA #$0A
+    STA BANK_DATA
+
+    LDA #$02
+    STA BANK_SELECT
+    LDA #$0C
+    STA BANK_DATA
+
+    LDA #$03
+    STA BANK_SELECT
+    LDA #$0D
+    STA BANK_DATA
+
+    LDA #$04
+    STA BANK_SELECT
+    LDA #$0E
+    STA BANK_DATA
+
+    LDA #$05
+    STA BANK_SELECT
+    LDA #$0F
+    STA BANK_DATA
+
+    RTS
+
+frame0:
+    LDA #$00
+    STA BANK_SELECT
+    LDA #$00
+    STA BANK_DATA
+
+    LDA #$01
+    STA BANK_SELECT
+    LDA #$02
+    STA BANK_DATA
+
+    LDA #$02
+    STA BANK_SELECT
+    LDA #$04
+    STA BANK_DATA
+
+    LDA #$03
+    STA BANK_SELECT
+    LDA #$05
+    STA BANK_DATA
+
+    LDA #$04
+    STA BANK_SELECT
+    LDA #$06
+    STA BANK_DATA
+
+    LDA #$05
+    STA BANK_SELECT
+    LDA #$07
+    STA BANK_DATA
+
+    RTS
 .endproc
 
 .import reset_handler
@@ -42,7 +116,17 @@ vblankwait:                         ; wait for another vblank before continuing
     LDA #%00011110                  ; turn on screen
     STA PPUMASK
 
+    LDA #$00
+    STA frame_index
+    JSR set_chr_banks
+
 forever:
+    BIT PPUSTATUS
+    BPL forever
+    LDA frame_index
+    EOR #$01
+    STA frame_index
+    JSR set_chr_banks
     JMP forever
 .endproc
 
@@ -60,3 +144,4 @@ palettes:
 
 .segment "CHR"
 .incbin "graphic.chr"
+.incbin "graphic_frame2.chr"
