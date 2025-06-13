@@ -3,6 +3,7 @@
 
 .segment "ZEROPAGE"
 frame_index: .res 1
+frame_counter: .res 1
 
 .segment "CODE"
 .proc irq_handler
@@ -118,15 +119,23 @@ vblankwait:                         ; wait for another vblank before continuing
 
     LDA #$00
     STA frame_index
+    STA frame_counter
     JSR set_chr_banks
 
 forever:
     BIT PPUSTATUS
     BPL forever
+    INC frame_counter
+    LDA frame_counter
+    CMP #$3C
+    BCC no_change
+    LDA #$00
+    STA frame_counter
     LDA frame_index
     EOR #$01
     STA frame_index
     JSR set_chr_banks
+no_change:
     JMP forever
 .endproc
 
