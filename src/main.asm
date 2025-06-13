@@ -127,7 +127,7 @@ forever:
     BPL forever
     INC frame_counter
     LDA frame_counter
-    CMP #$3C
+    CMP #20
     BCC no_change
     LDA #$00
     STA frame_counter
